@@ -45,16 +45,31 @@ for (i in 1:length(cats)){
 }
 
 # remove job role variable
-ibm <- colnames(ibm[,-c(16)])
+ibm <- ibm[,-c(16)]
 
 # correlation anaylsis
-ibm.cor <- ibm.num[,-c(5,6,18)]
+ibm.cor <- as.matrix(ibm.num[,-c(5,6,18)])
 colnames(ibm.cor)
 cor(ibm.cor)
-corrplot::corrplot(ibm.cor)
+corrplot::corrplot(cor(ibm.cor), type = "upper")
 
 
+## Hierarchical Logistic Model ##
+# install library
+#install.packages("lme4")
+library(lme4)
 
+# fit model with only department effect
+fit <- glmer(attrition ~ (1 | department), family = binomial("logit"), data = ibm)
+summary(fit)
+fita <- glm(attrition ~ 1, data = ibm, family = binomial("logit")) 
+logLik(fita)-logLik(fit)
 
+fit <- glmer(attrition ~ (1 | overtime), family = binomial("logit"), data = ibm)
+summary(fit)
+fita <- glm(attrition ~ 1, data = ibm, family = binomial("logit")) 
+logLik(fita)-logLik(fit)
+# 'log Lik.' -3.979039e-12 (df=1)
 
-
+(fit2 <- glmer(attrition ~ businesstravel + (1 | department), family = binomial("logit"), data
+               = ibm)) 
